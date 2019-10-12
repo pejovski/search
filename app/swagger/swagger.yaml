@@ -1,0 +1,218 @@
+consumes:
+  - application/json
+produces:
+  - application/json
+swagger: '2.0'
+info:
+  description: 'Search API Swagger UI'
+  title: Search API Swagger UI
+  version: 1.0.0
+tags:
+  - name: "search"
+    description: "search"
+basePath: /
+paths:
+  '/products':
+    get:
+      summary: Get a of products based on a full text search query
+      tags:
+        - search
+      description: ''
+      parameters:
+        - $ref: '#/parameters/searchQuery'
+        - $ref: '#/parameters/brand'
+        - $ref: '#/parameters/price'
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/sort'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Products'
+        '400':
+          description: Bad Request
+        '403':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+    post:
+      tags:
+        - "search"
+      summary: Create product
+      operationId: product-post
+      parameters:
+        - name: product
+          description: product
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              brand:
+                type: string
+              price:
+                type: number
+              stock:
+                type: number
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+  '/products/{id}':
+    get:
+      tags:
+        - "search"
+      summary: Get product
+      operationId: product-get
+      parameters:
+        - name: id
+          type: string
+          description: product id
+          in: path
+          required: true
+      responses:
+        '200':
+          $ref: '#/responses/product'
+        '400':
+          description: Bad Request
+        '403':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+    delete:
+      tags:
+        - "search"
+      summary: Delete product
+      operationId: product-delete
+      parameters:
+        - name: id
+          type: string
+          description: product id
+          in: path
+          required: true
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+        '403':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+        '503':
+          description: Service Unavailable
+responses:
+  product:
+    description: Ok
+    schema:
+      $ref: '#/definitions/Product'
+  products:
+    description: Ok
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/Product'
+parameters:
+  searchQuery:
+    name: q
+    description: Full text search query
+    type: string
+    required: true
+    in: query
+  brand:
+    name: brand
+    description: 'brand filter (e.g: ?brand=adidas)'
+    type: string
+    in: query
+  price:
+    name: price
+    description: 'price filter (e.g: ?price=200-300, price=200-, price=-300)'
+    type: string
+    in: query
+  offset:
+    name: offset
+    description: 'Zero based index of first item to fetch (default: 0)'
+    type: integer
+    minimum: 0
+    in: query
+  limit:
+    name: limit
+    description: 'Amount of items to fetch (default: 10)'
+    type: integer
+    maximum: 500
+    minimum: 1
+    in: query
+  sort:
+    name: sort
+    description: 'Sorting criteria of a collection. Should be in format {key}-{order} as described below. If no order is provided, price ascending is used as default.'
+    type: string
+    in: query
+    default: price-asc
+    enum:
+      - price-asc
+      - price-desc
+definitions:
+  Products:
+    type: object
+    properties:
+      offset:
+        $ref: '#/definitions/Offset'
+      limit:
+        $ref: '#/definitions/Limit'
+      count:
+        $ref: '#/definitions/Count'
+      total:
+        $ref: '#/definitions/Total'
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Product'
+    required:
+      - offset
+      - limit
+      - count
+      - total
+      - items
+  Product:
+    type: object
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      brand:
+        type: string
+      price:
+        type: number
+      stock:
+        type: number
+    required:
+      - id
+      - title
+      - brand
+      - price
+      - stock
+  Offset:
+    type: integer
+    description: Zero indexed position for first item of page
+  Limit:
+    type: integer
+    description: Max number of items returned in current page
+  Total:
+    type: integer
+    description: Total count of items across all pages
+  Count:
+    type: integer
+    description: Current count of items returned
