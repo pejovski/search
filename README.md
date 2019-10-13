@@ -1,11 +1,16 @@
 # Search
 
-- Micro-service with functionality for adding, deleting and searching for products in a product catalog elastic DB.
-- Supports full-text search, with filters, sorting and pagination.
-- It has simple api-key authentication and versioning. 
-- Open API 3.0 UI
-- DB and App dockerized
-- Simple CI for GitHub and GitLab
+Micro-service with functionality for adding, deleting and searching for products in a product catalog elastic DB.
+
+Supports full-text search, with filters, sorting and pagination.
+
+It has simple api-key authentication and versioning. 
+
+Open API 3.0 UI
+
+DB and App dockerized
+
+Simple CI for GitHub and GitLab
 
 ## Requirements
 
@@ -14,6 +19,7 @@ go version 1.13
 docker
 docker-compose
 golang-statik: sudo apt install golang-statik
+mockgen: sudo apt install mockgen
 ```
 
 ## Installation
@@ -65,6 +71,19 @@ docker-compose up -d
 wait some time until elasticsearch is ready
 - open [Search API](http://localhost:8207)
 - use Api-Key: e9435160-1df0-4d27-b0bf-9b3edd9d5737 for authentication
+
+## Testing
+
+Example tests added in controller/controller_test.go
+
+For production systems make sure the coverage is 100%
+
+go test ./... -race -cover
+
+### Create Mock
+```bash
+ mockgen -source=[interface_name].go -destination=[interface_name]_mock.go -package=[package_name]
+```
 
 ## Swagger update
 - use http://editor.swagger.io
