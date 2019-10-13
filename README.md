@@ -1,5 +1,12 @@
 # Search
 
+- Micro-service with functionality for adding, deleting and searching for products in a product catalog elastic DB.
+- Supports full-text search, with filters, sorting and pagination.
+- It has simple api-key authentication and versioning. 
+- Open API 3.0 UI
+- DB and App dockerized
+- Simple CI for GitHub and GitLab
+
 ## Requirements
 
 ```bash
