@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/pejovski/search/domain"
-	"github.com/pejovski/search/entity"
+	"github.com/pejovski/search/model"
 	"github.com/pejovski/search/scope"
 	"github.com/segmentio/ksuid"
 	"github.com/sirupsen/logrus"
@@ -16,7 +16,7 @@ func NewSearch(r domain.SearchRepository) Search {
 	return Search{repository: r}
 }
 
-func (c Search) GetProduct(id string) (*entity.Product, error) {
+func (c Search) GetProduct(id string) (*model.Product, error) {
 	p, err := c.repository.Product(id)
 	if err != nil {
 		logrus.Errorf("Failed to get product %s; Error: %s", id, err)
@@ -26,7 +26,7 @@ func (c Search) GetProduct(id string) (*entity.Product, error) {
 	return p, nil
 }
 
-func (c Search) GetProducts(s *scope.Scope) ([]*entity.Product, int, error) {
+func (c Search) GetProducts(s *scope.Scope) ([]*model.Product, int, error) {
 	ps, total, err := c.repository.Products(s)
 	if err != nil {
 		logrus.Errorf("Failed to get products for scope %v; Error: %s", s, err)
@@ -36,7 +36,7 @@ func (c Search) GetProducts(s *scope.Scope) ([]*entity.Product, int, error) {
 	return ps, total, nil
 }
 
-func (c Search) CreateProduct(p *entity.Product) (string, error) {
+func (c Search) CreateProduct(p *model.Product) (string, error) {
 	p.Id = ksuid.New().String()
 	id, err := c.repository.Create(p)
 	if err != nil {

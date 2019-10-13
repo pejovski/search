@@ -1,16 +1,16 @@
 package repository
 
 import (
-	"github.com/pejovski/search/entity"
+	"github.com/pejovski/search/model"
 	"github.com/pejovski/search/scope"
 )
 
-func mapHitToProduct(h *Hit) *entity.Product {
+func mapHitToProduct(h *Hit) *model.Product {
 	s := h.Source
-	return &entity.Product{Id: h.Id, Title: s.Title, Brand: s.Brand, Price: s.Price, Stock: s.Stock}
+	return &model.Product{Id: h.Id, Title: s.Title, Brand: s.Brand, Price: s.Price, Stock: s.Stock}
 }
 
-func mapProductToDocument(p *entity.Product) *Document {
+func mapProductToDocument(p *model.Product) *Document {
 	return &Document{Title: p.Title, Brand: p.Brand, Price: p.Price, Stock: p.Stock}
 }
 

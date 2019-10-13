@@ -57,6 +57,7 @@ docker-compose up -d
 ```
 wait some time until elasticsearch is ready
 - open [Search API](http://localhost:8207)
+- use Api-Key: e9435160-1df0-4d27-b0bf-9b3edd9d5737 for authentication
 
 ## Swagger update
 - use http://editor.swagger.io

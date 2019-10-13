@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/pejovski/search/domain"
-	"github.com/pejovski/search/entity"
+	"github.com/pejovski/search/model"
 	"github.com/pejovski/search/scope"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -95,7 +95,7 @@ func (h Handler) Product() http.HandlerFunc {
 func (h Handler) CreateProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		var p *entity.Product
+		var p *model.Product
 		if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
 			logrus.Warnln("Failed to decode request body")
 			http.Error(w, "Bad request", http.StatusBadRequest)

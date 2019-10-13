@@ -1,218 +1,252 @@
-consumes:
-  - application/json
-produces:
-  - application/json
-swagger: '2.0'
+openapi: 3.0.0
 info:
-  description: 'Search API Swagger UI'
+  description: Search API Swagger UI
   title: Search API Swagger UI
   version: 1.0.0
 tags:
-  - name: "search"
-    description: "search"
-basePath: /
+  - name: search
+    description: search
+security:
+  - APIKeyHeader: []
 paths:
-  '/products':
+  /products:
     get:
       summary: Get a of products based on a full text search query
       tags:
         - search
-      description: ''
+      description: ""
       parameters:
-        - $ref: '#/parameters/searchQuery'
-        - $ref: '#/parameters/brand'
-        - $ref: '#/parameters/price'
-        - $ref: '#/parameters/offset'
-        - $ref: '#/parameters/limit'
-        - $ref: '#/parameters/sort'
+        - $ref: "#/components/parameters/searchQuery"
+        - $ref: "#/components/parameters/brand"
+        - $ref: "#/components/parameters/price"
+        - $ref: "#/components/parameters/offset"
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/sort"
       responses:
-        '200':
+        "200":
           description: OK
-          schema:
-            $ref: '#/definitions/Products'
-        '400':
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Products"
+        "400":
           description: Bad Request
-        '403':
+        "401":
+          $ref: "#/components/responses/unauthorizedError"
+        "404":
           description: Not Found
-        '500':
+        "500":
           description: Internal Server Error
-        '503':
+        "503":
           description: Service Unavailable
     post:
       tags:
-        - "search"
+        - search
       summary: Create product
       operationId: product-post
-      parameters:
-        - name: product
-          description: product
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              title:
-                type: string
-              brand:
-                type: string
-              price:
-                type: number
-              stock:
-                type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                brand:
+                  type: string
+                price:
+                  type: number
+                stock:
+                  type: number
+        description: product
+        required: true
       responses:
-        '201':
+        "201":
           description: Created
-        '400':
+        "400":
           description: Bad Request
-        '500':
+        "401":
+          $ref: "#/components/responses/unauthorizedError"
+        "500":
           description: Internal Server Error
-        '503':
+        "503":
           description: Service Unavailable
-  '/products/{id}':
+  "/products/{id}":
     get:
       tags:
-        - "search"
+        - search
       summary: Get product
       operationId: product-get
       parameters:
         - name: id
-          type: string
           description: product id
           in: path
           required: true
+          schema:
+            type: string
       responses:
-        '200':
-          $ref: '#/responses/product'
-        '400':
+        "200":
+          $ref: "#/components/responses/product"
+        "400":
           description: Bad Request
-        '403':
+        "401":
+          $ref: "#/components/responses/unauthorizedError"
+        "404":
           description: Not Found
-        '500':
+        "500":
           description: Internal Server Error
-        '503':
+        "503":
           description: Service Unavailable
     delete:
       tags:
-        - "search"
+        - search
       summary: Delete product
       operationId: product-delete
       parameters:
         - name: id
-          type: string
           description: product id
           in: path
           required: true
+          schema:
+            type: string
       responses:
-        '204':
+        "204":
           description: No Content
-        '400':
+        "400":
           description: Bad Request
-        '403':
+        "401":
+          $ref: "#/components/responses/unauthorizedError"
+        "404":
           description: Not Found
-        '500':
+        "500":
           description: Internal Server Error
-        '503':
+        "503":
           description: Service Unavailable
-responses:
-  product:
-    description: Ok
-    schema:
-      $ref: '#/definitions/Product'
-  products:
-    description: Ok
-    schema:
-      type: array
-      items:
-        $ref: '#/definitions/Product'
-parameters:
-  searchQuery:
-    name: q
-    description: Full text search query
-    type: string
-    required: true
-    in: query
-  brand:
-    name: brand
-    description: 'brand filter (e.g: ?brand=adidas)'
-    type: string
-    in: query
-  price:
-    name: price
-    description: 'price filter (e.g: ?price=200-300, price=200-, price=-300)'
-    type: string
-    in: query
-  offset:
-    name: offset
-    description: 'Zero based index of first item to fetch (default: 0)'
-    type: integer
-    minimum: 0
-    in: query
-  limit:
-    name: limit
-    description: 'Amount of items to fetch (default: 10)'
-    type: integer
-    maximum: 500
-    minimum: 1
-    in: query
-  sort:
-    name: sort
-    description: 'Sorting criteria of a collection. Should be in format {key}-{order} as described below. If no order is provided, price ascending is used as default.'
-    type: string
-    in: query
-    default: price-asc
-    enum:
-      - price-asc
-      - price-desc
-definitions:
-  Products:
-    type: object
-    properties:
-      offset:
-        $ref: '#/definitions/Offset'
-      limit:
-        $ref: '#/definitions/Limit'
-      count:
-        $ref: '#/definitions/Count'
-      total:
-        $ref: '#/definitions/Total'
-      items:
-        type: array
+servers:
+  - url: /v1
+components:
+  parameters:
+    searchQuery:
+      name: q
+      description: Full text search query
+      required: true
+      in: query
+      schema:
+        type: string
+    brand:
+      name: brand
+      description: "brand filter (e.g: ?brand=adidas)"
+      in: query
+      schema:
+        type: string
+    price:
+      name: price
+      description: "price filter (e.g: ?price=200-300, price=200-, price=-300)"
+      in: query
+      schema:
+        type: string
+    offset:
+      name: offset
+      description: "Zero based index of first item to fetch (default: 0)"
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+    limit:
+      name: limit
+      description: "Amount of items to fetch (default: 10)"
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 500
+    sort:
+      name: sort
+      description: Sorting criteria of a collection. Should be in format {key}-{order} as
+        described below. If no order is provided, ascending is used as default.
+      in: query
+      schema:
+        type: string
+        enum:
+          - price-asc
+          - price-desc
+        default: price-asc
+  responses:
+    product:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Product"
+    products:
+      description: Ok
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Product"
+    unauthorizedError:
+      description: API key is missing or invalid
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+  securitySchemes:
+    APIKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    Products:
+      type: object
+      properties:
+        offset:
+          $ref: "#/components/schemas/Offset"
+        limit:
+          $ref: "#/components/schemas/Limit"
+        count:
+          $ref: "#/components/schemas/Count"
+        total:
+          $ref: "#/components/schemas/Total"
         items:
-          $ref: '#/definitions/Product'
-    required:
-      - offset
-      - limit
-      - count
-      - total
-      - items
-  Product:
-    type: object
-    properties:
-      id:
-        type: string
-      title:
-        type: string
-      brand:
-        type: string
-      price:
-        type: number
-      stock:
-        type: number
-    required:
-      - id
-      - title
-      - brand
-      - price
-      - stock
-  Offset:
-    type: integer
-    description: Zero indexed position for first item of page
-  Limit:
-    type: integer
-    description: Max number of items returned in current page
-  Total:
-    type: integer
-    description: Total count of items across all pages
-  Count:
-    type: integer
-    description: Current count of items returned
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+      required:
+        - offset
+        - limit
+        - count
+        - total
+        - items
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        brand:
+          type: string
+        price:
+          type: number
+        stock:
+          type: number
+      required:
+        - id
+        - title
+        - brand
+        - price
+        - stock
+    Offset:
+      type: integer
+      description: Zero indexed position for first item of page
+    Limit:
+      type: integer
+      description: Max number of items returned in current page
+    Total:
+      type: integer
+      description: Total count of items across all pages
+    Count:
+      type: integer
+      description: Current count of items returned

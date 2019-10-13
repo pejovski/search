@@ -9,46 +9,51 @@ import (
 )
 
 type Router struct {
-	router  *mux.Router
-	handler *Handler
+	Router  *mux.Router
+	Handler *Handler
 }
 
 func NewRouter(h *Handler) *Router {
 	s := &Router{
-		router:  mux.NewRouter(),
-		handler: h,
+		Router:  mux.NewRouter(),
+		Handler: h,
 	}
-	s.routes()
-	s.swagger()
+
 	s.health()
+	s.swagger()
+	s.routes()
 
 	return s
 }
 
 func (rtr *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	rtr.router.ServeHTTP(w, r)
+	rtr.Router.ServeHTTP(w, r)
 }
 
-func (rtr Router) routes() {
-	rtr.router.HandleFunc("/products", rtr.handler.Products()).Methods("GET")
-	rtr.router.HandleFunc("/products", rtr.handler.CreateProduct()).Methods("POST")
-	rtr.router.HandleFunc("/products/{id}", rtr.handler.Product()).Methods("GET")
-	rtr.router.HandleFunc("/products/{id}", rtr.handler.DeleteProduct()).Methods("DELETE")
+func (rtr *Router) routes() {
+	routerV1 := rtr.Router.PathPrefix("/v1").Subrouter()
+	routerV1.Use(auth)
+
+	routerV1.HandleFunc("/products", rtr.Handler.Products()).Methods("GET")
+	routerV1.HandleFunc("/products", rtr.Handler.CreateProduct()).Methods("POST")
+	routerV1.HandleFunc("/products/{id}", rtr.Handler.Product()).Methods("GET")
+	routerV1.HandleFunc("/products/{id}", rtr.Handler.DeleteProduct()).Methods("DELETE")
 }
 
-func (rtr Router) swagger() {
+func (rtr *Router) swagger() {
 	// swagger handler
 	statikFS, err := fs.New()
 	if err != nil {
 		logrus.Fatalf("%s: %s", "Failed to find statik", err)
 	}
 	sh := http.FileServer(statikFS)
-	rtr.router.Handle("/", sh).Methods("GET")
-	rtr.router.PathPrefix("/swagger").Handler(sh)
+
+	rtr.Router.Handle("/", sh).Methods("GET")
+	rtr.Router.PathPrefix("/swagger").Handler(sh)
 }
 
-func (rtr Router) health() {
-	rtr.router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+func (rtr *Router) health() {
+	rtr.Router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("Up"))
 	}).Methods("GET")

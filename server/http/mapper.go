@@ -1,10 +1,10 @@
 package http
 
 import (
-	"github.com/pejovski/search/entity"
+	"github.com/pejovski/search/model"
 )
 
-func mapDomainProductToProduct(dp *entity.Product) *Product {
+func mapDomainProductToProduct(dp *model.Product) *Product {
 	return &Product{
 		Id:    dp.Id,
 		Title: dp.Title,
@@ -14,7 +14,7 @@ func mapDomainProductToProduct(dp *entity.Product) *Product {
 	}
 }
 
-func mapDomainProductsToProducts(dps []*entity.Product) []*Product {
+func mapDomainProductsToProducts(dps []*model.Product) []*Product {
 	ps := []*Product{}
 	for _, dp := range dps {
 		ps = append(ps, mapDomainProductToProduct(dp))

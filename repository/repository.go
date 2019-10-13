@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/elastic/go-elasticsearch/v8"
-	"github.com/pejovski/search/entity"
+	"github.com/pejovski/search/model"
 	"github.com/pejovski/search/scope"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -22,7 +22,7 @@ func NewESProductRepository(es *elasticsearch.Client) *ESProductRepository {
 	return &ESProductRepository{client: es}
 }
 
-func (r ESProductRepository) Product(id string) (*entity.Product, error) {
+func (r ESProductRepository) Product(id string) (*model.Product, error) {
 	var h *Hit
 
 	res, err := r.client.Get(index, id)
@@ -48,7 +48,7 @@ func (r ESProductRepository) Product(id string) (*entity.Product, error) {
 	return mapHitToProduct(h), nil
 }
 
-func (r ESProductRepository) Create(p *entity.Product) (string, error) {
+func (r ESProductRepository) Create(p *model.Product) (string, error) {
 	d := mapProductToDocument(p)
 
 	var buf bytes.Buffer
@@ -87,7 +87,7 @@ func (r ESProductRepository) Delete(id string) error {
 	return nil
 }
 
-func (r ESProductRepository) Products(s *scope.Scope) ([]*entity.Product, int, error) {
+func (r ESProductRepository) Products(s *scope.Scope) ([]*model.Product, int, error) {
 
 	query := mapScopeToQuery(s)
 
@@ -126,7 +126,7 @@ func (r ESProductRepository) Products(s *scope.Scope) ([]*entity.Product, int, e
 		return nil, 0, err
 	}
 
-	var products []*entity.Product
+	var products []*model.Product
 
 	for _, hit := range result.Hits.Hits {
 		products = append(products, mapHitToProduct(&hit))
