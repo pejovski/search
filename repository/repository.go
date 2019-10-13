@@ -115,6 +115,9 @@ func (r ESProductRepository) Products(s *scope.Scope) ([]*model.Product, int, er
 	defer res.Body.Close()
 
 	if res.IsError() {
+		if res.StatusCode == http.StatusNotFound {
+			return nil, 0, nil
+		}
 		logrus.Errorf("Error in the response. Status code: %d. Response: %s", res.StatusCode, res.String())
 		return nil, 0, fmt.Errorf("response error")
 	}
