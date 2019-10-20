@@ -40,7 +40,7 @@ func (s *Suite) TestGetProduct() {
 
 	s.repository.EXPECT().Product(gomock.Eq(id)).Return(p, nil).Times(1)
 
-	c := NewSearch(s.repository)
+	c := New(s.repository)
 
 	res, err := c.GetProduct(id)
 
@@ -59,7 +59,7 @@ func (s *Suite) TestGetProductError() {
 
 	s.repository.EXPECT().Product(gomock.Eq(id)).Return(nil, errRet).Times(1)
 
-	c := NewSearch(s.repository)
+	c := New(s.repository)
 
 	res, err := c.GetProduct(id)
 
