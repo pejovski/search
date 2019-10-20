@@ -1,4 +1,4 @@
-package repository
+package es
 
 type Document struct {
 	Title string  `json:"title"`

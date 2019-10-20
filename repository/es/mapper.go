@@ -1,20 +1,33 @@
-package repository
+package es
 
 import (
 	"github.com/pejovski/search/model"
-	"github.com/pejovski/search/scope"
+	"github.com/pejovski/search/pkg/scope"
 )
 
-func mapHitToProduct(h *Hit) *model.Product {
+type Mapper interface {
+	mapHitToProduct(h *Hit) *model.Product
+	mapProductToDocument(p *model.Product) *Document
+	mapScopeToQuery(s *scope.Scope) map[string]interface{}
+}
+
+type mapper struct {
+}
+
+func newMapper() mapper {
+	return mapper{}
+}
+
+func (m mapper) mapHitToProduct(h *Hit) *model.Product {
 	s := h.Source
 	return &model.Product{Id: h.Id, Title: s.Title, Brand: s.Brand, Price: s.Price, Stock: s.Stock}
 }
 
-func mapProductToDocument(p *model.Product) *Document {
+func (m mapper) mapProductToDocument(p *model.Product) *Document {
 	return &Document{Title: p.Title, Brand: p.Brand, Price: p.Price, Stock: p.Stock}
 }
 
-func mapScopeToQuery(s *scope.Scope) map[string]interface{} {
+func (m mapper) mapScopeToQuery(s *scope.Scope) map[string]interface{} {
 
 	must := map[string]interface{}{
 		"multi_match": map[string]interface{}{

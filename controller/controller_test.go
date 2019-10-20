@@ -1,25 +1,26 @@
-package controller_test
+package controller
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/golang/mock/gomock"
-	"github.com/pejovski/search/controller"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/pejovski/search/gen/mock"
 	"github.com/pejovski/search/model"
-	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type Suite struct {
 	suite.Suite
-	repository *mock.MockSearchRepository
+	repository *mock.MockRepository
 }
 
 func (s *Suite) SetupTest() {
 	ctrl := gomock.NewController(s.T())
 	defer ctrl.Finish()
 
-	s.repository = mock.NewMockSearchRepository(ctrl)
+	s.repository = mock.NewMockRepository(ctrl)
 }
 
 func TestRepositoryApiSuite(t *testing.T) {
@@ -39,7 +40,7 @@ func (s *Suite) TestGetProduct() {
 
 	s.repository.EXPECT().Product(gomock.Eq(id)).Return(p, nil).Times(1)
 
-	c := controller.NewSearch(s.repository)
+	c := NewSearch(s.repository)
 
 	res, err := c.GetProduct(id)
 
@@ -58,7 +59,7 @@ func (s *Suite) TestGetProductError() {
 
 	s.repository.EXPECT().Product(gomock.Eq(id)).Return(nil, errRet).Times(1)
 
-	c := controller.NewSearch(s.repository)
+	c := NewSearch(s.repository)
 
 	res, err := c.GetProduct(id)
 
