@@ -3,7 +3,7 @@ module github.com/pejovski/search
 go 1.13
 
 require (
-	github.com/elastic/go-elasticsearch/v8 v8.0.0-20191009103135-bbddf24d4973
+	github.com/elastic/go-elasticsearch/v8 v8.0.0-20191021115133-396f70f7f07d
 	github.com/golang/mock v1.3.1
 	github.com/gorilla/mux v1.7.3
 	github.com/joho/godotenv v1.3.0

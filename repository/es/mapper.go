@@ -6,29 +6,28 @@ import (
 )
 
 type Mapper interface {
-	mapHitToProduct(h *Hit) *model.Product
-	mapProductToDocument(p *model.Product) *Document
+	mapHitToProduct(h Hit) *model.Product
+	mapProductToDocument(p *model.Product) Document
 	mapScopeToQuery(s *scope.Scope) map[string]interface{}
 }
 
 type mapper struct {
 }
 
-func newMapper() mapper {
+func newMapper() Mapper {
 	return mapper{}
 }
 
-func (m mapper) mapHitToProduct(h *Hit) *model.Product {
+func (m mapper) mapHitToProduct(h Hit) *model.Product {
 	s := h.Source
 	return &model.Product{Id: h.Id, Title: s.Title, Brand: s.Brand, Price: s.Price, Stock: s.Stock}
 }
 
-func (m mapper) mapProductToDocument(p *model.Product) *Document {
-	return &Document{Title: p.Title, Brand: p.Brand, Price: p.Price, Stock: p.Stock}
+func (m mapper) mapProductToDocument(p *model.Product) Document {
+	return Document{Title: p.Title, Brand: p.Brand, Price: p.Price, Stock: p.Stock}
 }
 
 func (m mapper) mapScopeToQuery(s *scope.Scope) map[string]interface{} {
-
 	must := map[string]interface{}{
 		"multi_match": map[string]interface{}{
 			"query":  s.SearchQuery,
@@ -36,13 +35,11 @@ func (m mapper) mapScopeToQuery(s *scope.Scope) map[string]interface{} {
 		},
 	}
 
-	filter := mapScopeFilterToFilter(s)
-
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
 				"must":   must,
-				"filter": filter,
+				"filter": mapScopeFilterToFilter(s),
 			},
 		},
 	}
@@ -51,7 +48,6 @@ func (m mapper) mapScopeToQuery(s *scope.Scope) map[string]interface{} {
 }
 
 func mapScopeFilterToFilter(s *scope.Scope) []interface{} {
-
 	var price map[string]interface{}
 	var filter []interface{}
 

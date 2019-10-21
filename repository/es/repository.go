@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	repo "github.com/pejovski/search/repository"
 	"net/http"
 
 	"github.com/elastic/go-elasticsearch/v8"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/pejovski/search/model"
 	"github.com/pejovski/search/pkg/scope"
+	repo "github.com/pejovski/search/repository"
 )
 
 const index = "products"
@@ -30,7 +30,7 @@ func NewRepository(es *elasticsearch.Client) repo.Repository {
 }
 
 func (r repository) Product(id string) (*model.Product, error) {
-	var h *Hit
+	var h Hit
 
 	res, err := r.client.Get(index, id)
 	if err != nil {
@@ -139,7 +139,7 @@ func (r repository) Products(s *scope.Scope) ([]*model.Product, int, error) {
 	var products []*model.Product
 
 	for _, hit := range result.Hits.Hits {
-		products = append(products, r.mapper.mapHitToProduct(&hit))
+		products = append(products, r.mapper.mapHitToProduct(hit))
 	}
 
 	return products, result.Hits.Total.Value, nil
