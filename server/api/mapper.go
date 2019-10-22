@@ -18,7 +18,7 @@ func newMapper() Mapper {
 
 func (m mapper) mapDomainProductToProduct(dp *model.Product) *Product {
 	return &Product{
-		Id:    dp.Id,
+		ID:    dp.ID,
 		Title: dp.Title,
 		Brand: dp.Brand,
 		Price: dp.Price,

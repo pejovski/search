@@ -24,7 +24,7 @@ func (s *MapperSuite) SetupTest() {
 
 func (s *MapperSuite) TestMapHitToProduct() {
 	h := Hit{
-		Id: "1",
+		ID: "1",
 		Source: Document{
 			Title: "galaxy",
 			Brand: "samsung",
@@ -36,7 +36,7 @@ func (s *MapperSuite) TestMapHitToProduct() {
 	p := m.mapHitToProduct(h)
 
 	s.NotEmpty(p)
-	s.Equal(h.Id, p.Id)
+	s.Equal(h.ID, p.ID)
 	s.Equal(h.Source.Title, p.Title)
 	s.Equal(h.Source.Stock, p.Stock)
 	s.Equal(h.Source.Brand, p.Brand)
@@ -45,7 +45,7 @@ func (s *MapperSuite) TestMapHitToProduct() {
 
 func (s *MapperSuite) TestMapProductToDocument() {
 	p := &model.Product{
-		Id:    "1",
+		ID:    "1",
 		Title: "galaxy",
 		Brand: "samsung",
 		Price: 50,

@@ -20,7 +20,7 @@ func newMapper() Mapper {
 
 func (m mapper) mapHitToProduct(h Hit) *model.Product {
 	s := h.Source
-	return &model.Product{Id: h.Id, Title: s.Title, Brand: s.Brand, Price: s.Price, Stock: s.Stock}
+	return &model.Product{ID: h.ID, Title: s.Title, Brand: s.Brand, Price: s.Price, Stock: s.Stock}
 }
 
 func (m mapper) mapProductToDocument(p *model.Product) Document {

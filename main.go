@@ -31,8 +31,8 @@ func main() {
 
 	ctx := signals.Context()
 
-	serverApi := api.NewServer(c)
-	serverApi.Run(ctx)
+	serverAPI := api.NewServer(c)
+	serverAPI.Run(ctx)
 
 	logrus.Infof("allowing %s for graceful shutdown to complete", shutdownDuration)
 	<-time.After(shutdownDuration)

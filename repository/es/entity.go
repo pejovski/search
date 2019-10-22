@@ -12,7 +12,7 @@ type Update struct {
 }
 
 type Hit struct {
-	Id     string   `json:"_id"`
+	ID     string   `json:"_id"`
 	Source Document `json:"_source"`
 }
 

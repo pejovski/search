@@ -44,7 +44,7 @@ func (c controller) GetProducts(s *scope.Scope) ([]*model.Product, int, error) {
 }
 
 func (c controller) CreateProduct(p *model.Product) (string, error) {
-	p.Id = ksuid.New().String()
+	p.ID = ksuid.New().String()
 	id, err := c.repository.Create(p)
 	if err != nil {
 		logrus.Errorf("Failed to create product; Error: %s", err)

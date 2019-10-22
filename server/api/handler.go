@@ -113,7 +113,7 @@ func (h handler) createProduct() http.HandlerFunc {
 
 		id, err := h.controller.CreateProduct(p)
 		if err != nil {
-			logrus.Errorf("Failed to create product for id %s. Error: %s", p.Id, err)
+			logrus.Errorf("Failed to create product for id %s. Error: %s", p.ID, err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}

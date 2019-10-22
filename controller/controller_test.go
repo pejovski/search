@@ -31,7 +31,7 @@ func (s *Suite) TestGetProduct() {
 	id := "123"
 
 	p := &model.Product{
-		Id:    id,
+		ID:    id,
 		Title: "Galaxy S10",
 		Brand: "Samsung",
 		Price: 500,

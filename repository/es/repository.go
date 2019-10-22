@@ -61,22 +61,22 @@ func (r repository) Create(p *model.Product) (string, error) {
 	var buf bytes.Buffer
 
 	if err := json.NewEncoder(&buf).Encode(d); err != nil {
-		logrus.Errorf("Failed to decode body for product %s", p.Id)
+		logrus.Errorf("Failed to decode body for product %s", p.ID)
 		return "", err
 	}
 
-	res, err := r.client.Create(index, p.Id, &buf)
+	res, err := r.client.Create(index, p.ID, &buf)
 	if err != nil {
-		logrus.Errorf("Failed to create product %s", p.Id)
+		logrus.Errorf("Failed to create product %s", p.ID)
 		return "", err
 	}
 
 	if res.IsError() {
-		logrus.Errorf("Error in the response for product with id: %s. Status code: %d. Response: %s", p.Id, res.StatusCode, res.String())
+		logrus.Errorf("Error in the response for product with id: %s. Status code: %d. Response: %s", p.ID, res.StatusCode, res.String())
 		return "", fmt.Errorf("response error")
 	}
 
-	return p.Id, nil
+	return p.ID, nil
 }
 
 func (r repository) Delete(id string) error {
