@@ -105,7 +105,7 @@ func (h handler) createProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var p *model.Product
-		if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
+		if err := h.decode(w, r, &p); err != nil {
 			logrus.Warnln("Failed to decode request body")
 			http.Error(w, "Bad request", http.StatusBadRequest)
 			return

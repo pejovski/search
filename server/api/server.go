@@ -43,14 +43,15 @@ func (s server) Run(ctx context.Context) {
 				time.Second*5,
 			)
 			defer cancel()
-			server.Shutdown(shutdownCtx)
+			if err := server.Shutdown(shutdownCtx); err != nil {
+				logrus.Errorf("API Server error: %s", err)
+			}
 		case <-doneCh:
 		}
 	}()
 
 	logrus.Infof("API Server started at port: %s", os.Getenv("APP_PORT"))
-	err := server.ListenAndServe()
-	if err != nil {
+	if err := server.ListenAndServe(); err != nil {
 		logrus.Errorf("API Server error: %s", err)
 	}
 
