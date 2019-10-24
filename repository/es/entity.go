@@ -1,4 +1,4 @@
-package repository
+package es
 
 type Document struct {
 	Title string  `json:"title"`
@@ -12,7 +12,7 @@ type Update struct {
 }
 
 type Hit struct {
-	Id     string   `json:"_id"`
+	ID     string   `json:"_id"`
 	Source Document `json:"_source"`
 }
 

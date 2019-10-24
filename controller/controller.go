@@ -1,22 +1,29 @@
 package controller
 
 import (
-	"github.com/pejovski/search/domain"
 	"github.com/pejovski/search/model"
-	"github.com/pejovski/search/scope"
+	"github.com/pejovski/search/pkg/scope"
+	"github.com/pejovski/search/repository"
 	"github.com/segmentio/ksuid"
 	"github.com/sirupsen/logrus"
 )
 
-type Search struct {
-	repository domain.SearchRepository
+type Controller interface {
+	GetProduct(id string) (*model.Product, error)
+	GetProducts(s *scope.Scope) (ps []*model.Product, total int, err error)
+	CreateProduct(p *model.Product) (id string, err error)
+	DeleteProduct(id string) error
 }
 
-func NewSearch(r domain.SearchRepository) Search {
-	return Search{repository: r}
+type controller struct {
+	repository repository.Repository
 }
 
-func (c Search) GetProduct(id string) (*model.Product, error) {
+func New(r repository.Repository) Controller {
+	return controller{repository: r}
+}
+
+func (c controller) GetProduct(id string) (*model.Product, error) {
 	p, err := c.repository.Product(id)
 	if err != nil {
 		logrus.Errorf("Failed to get product %s; Error: %s", id, err)
@@ -26,7 +33,7 @@ func (c Search) GetProduct(id string) (*model.Product, error) {
 	return p, nil
 }
 
-func (c Search) GetProducts(s *scope.Scope) ([]*model.Product, int, error) {
+func (c controller) GetProducts(s *scope.Scope) ([]*model.Product, int, error) {
 	ps, total, err := c.repository.Products(s)
 	if err != nil {
 		logrus.Errorf("Failed to get products for scope %v; Error: %s", s, err)
@@ -36,8 +43,8 @@ func (c Search) GetProducts(s *scope.Scope) ([]*model.Product, int, error) {
 	return ps, total, nil
 }
 
-func (c Search) CreateProduct(p *model.Product) (string, error) {
-	p.Id = ksuid.New().String()
+func (c controller) CreateProduct(p *model.Product) (string, error) {
+	p.ID = ksuid.New().String()
 	id, err := c.repository.Create(p)
 	if err != nil {
 		logrus.Errorf("Failed to create product; Error: %s", err)
@@ -47,7 +54,7 @@ func (c Search) CreateProduct(p *model.Product) (string, error) {
 	return id, nil
 }
 
-func (c Search) DeleteProduct(id string) error {
+func (c controller) DeleteProduct(id string) error {
 	err := c.repository.Delete(id)
 	if err != nil {
 		logrus.Errorf("Failed to delete product %s; Error: %s", id, err)

@@ -1,27 +1,36 @@
-package http
+package api
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/pejovski/search/domain"
+	"github.com/pejovski/search/controller"
 	"github.com/pejovski/search/model"
-	"github.com/pejovski/search/scope"
+	"github.com/pejovski/search/pkg/scope"
 	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
-type Handler struct {
-	controller domain.SearchController
+type Handler interface {
+	product() http.HandlerFunc
+	products() http.HandlerFunc
+	createProduct() http.HandlerFunc
+	deleteProduct() http.HandlerFunc
 }
 
-func NewHandler(c domain.SearchController) *Handler {
-	return &Handler{
+type handler struct {
+	controller controller.Controller
+	mapper     Mapper
+}
+
+func newHandler(c controller.Controller) Handler {
+	return handler{
 		controller: c,
+		mapper:     newMapper(),
 	}
 }
 
-func (h Handler) Products() http.HandlerFunc {
+func (h handler) products() http.HandlerFunc {
 
 	type Result struct {
 		Offset int        `json:"offset"`
@@ -58,14 +67,14 @@ func (h Handler) Products() http.HandlerFunc {
 			Limit:  s.Pagination.Limit,
 			Count:  len(dps),
 			Total:  total,
-			Items:  mapDomainProductsToProducts(dps),
+			Items:  h.mapper.mapDomainProductsToProducts(dps),
 		}
 
 		h.respond(w, r, res, http.StatusOK)
 	}
 }
 
-func (h Handler) Product() http.HandlerFunc {
+func (h handler) product() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := mux.Vars(r)
 
@@ -88,15 +97,15 @@ func (h Handler) Product() http.HandlerFunc {
 			return
 		}
 
-		h.respond(w, r, mapDomainProductToProduct(p), http.StatusOK)
+		h.respond(w, r, h.mapper.mapDomainProductToProduct(p), http.StatusOK)
 	}
 }
 
-func (h Handler) CreateProduct() http.HandlerFunc {
+func (h handler) createProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var p *model.Product
-		if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
+		if err := h.decode(w, r, &p); err != nil {
 			logrus.Warnln("Failed to decode request body")
 			http.Error(w, "Bad request", http.StatusBadRequest)
 			return
@@ -104,7 +113,7 @@ func (h Handler) CreateProduct() http.HandlerFunc {
 
 		id, err := h.controller.CreateProduct(p)
 		if err != nil {
-			logrus.Errorf("Failed to create product for id %s. Error: %s", p.Id, err)
+			logrus.Errorf("Failed to create product for id %s. Error: %s", p.ID, err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
@@ -114,7 +123,7 @@ func (h Handler) CreateProduct() http.HandlerFunc {
 	}
 }
 
-func (h Handler) DeleteProduct() http.HandlerFunc {
+func (h handler) deleteProduct() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		params := mux.Vars(r)
@@ -135,7 +144,7 @@ func (h Handler) DeleteProduct() http.HandlerFunc {
 	}
 }
 
-func (h Handler) respond(w http.ResponseWriter, r *http.Request, data interface{}, status int) {
+func (h handler) respond(w http.ResponseWriter, r *http.Request, data interface{}, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
@@ -149,6 +158,6 @@ func (h Handler) respond(w http.ResponseWriter, r *http.Request, data interface{
 	}
 }
 
-func (h Handler) decode(w http.ResponseWriter, r *http.Request, v interface{}) error {
+func (h handler) decode(w http.ResponseWriter, r *http.Request, v interface{}) error {
 	return json.NewDecoder(r.Body).Decode(v)
 }
